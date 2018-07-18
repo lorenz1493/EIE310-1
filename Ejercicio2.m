@@ -1,17 +1,27 @@
-%Mi RUT es 
+fc = 200;
+FC = 250;
+Fs = 1000; 
+N = 30;
+fim = 0;
+fmax = 500;
+ml = 1e-6;
 
-A=2 ; B=0 ; C=0 ; D=8 ; E=3 ; F=6 ; G=8 ; H=8 ; I=0 ;
+wn = [2*fc/Fs,2*FC/Fs];
 
-%RESPUESTA ESCALON FILTRO IIR
-%y(n) = 0.1 x(n) + 0.9 y(n-1)
-vi = (H*A); %voltaje de entrada
-a = (D+E)/10; %cte del filtro
-dt = 10e-3; %1/100 HZ = 10 mseg
-t(1) = 0; %indice 1 => t=0
-vf(1) = 0; %indice 1 => t=0
-for i = 2:41;
-    t(i) = (i-1) * dt;
-    vf(i) = (1-a) * vi + a * vf(i-1);
-end
-close; stem(t,vf); %grafico
-xlabel('seg'); grid;
+hn = fir1(N-1,wn,'bandpass',hanning(N));
+hm = fir1(N-1,wn,'bandpass',hamming(N));
+k = fir1(N-1,wn,'bandpass',kaiser(N,10));
+
+f = [fmin:fmax];
+
+Hhn = freqz(hn,1,f,Fs);
+Hhm = freqz(hm,1,f,Fs);
+Hk = freqz(k,1,f,Fs);
+
+subplot 411; semilogy(h,N)
+subplot 412; semilogy(f,abs(Hhn))
+axis([fmin fmax 1e-6 1.1])
+xlabel('f[Hz]'); title('Mag(H)')
+subplot 413; semilogy(f,abs(Hhm))
+subplot 414; semilogy(f,abs(k))
+
